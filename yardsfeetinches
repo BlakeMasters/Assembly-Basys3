@@ -1,0 +1,40 @@
+execute_data_sort:  #Program takes a value in yards,feet,inches and converts the total to inches
+		    #using the tables to index equivalent values.
+.data
+feet:        .byte  0,12,24,36,48,60,72,84,96,108           # inches per foot
+yard:        .word  0,36,72,96,132,168,192,224,256,288      # inches per yard
+
+.text
+init:
+	mv	x20,x0				#clear accumulator
+	
+inches:
+	andi	x15,x10,0x0000_000F		#inches mask
+	addi	x20,x20,x15			#accumulate inches
+	
+feet_calc:
+	andi	x15,x10,0x0000_00F0		#feet mask
+	srli	x15,x15,4			#bytes so move right to accumulate
+	
+	la	x21, feet			#loads address feet to 21
+	add	x21,x21,x15			#adds to address to index list
+	lbu	x21, 0(x21)			#grabs value at index x15 in feet
+	
+	addi	x20,x20,x21			#totals inches and feet together
+
+yard_calc:
+	andi	x15,x10,0x0000_0F00		#yards bit mask
+	srli	x15,x15,6			#moved 6 since byte * 4 (2 positions) to index
+	
+	la	x21, yard			#address load
+	add	x21,x21,x15			#adds index to address
+	lw	x21, 0(x21)			#stores yards index to 21
+	
+	addi	x20,x20,x21			#sums yards feet inches
+	
+Done:
+	ret					#Honey, I'm Home.
+	
+	
+		
+	
